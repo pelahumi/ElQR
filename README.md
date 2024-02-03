@@ -1,1 +1,1 @@
-# ElQR
+# El-QR
