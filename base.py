@@ -1,21 +1,28 @@
-import base64
+from argparse import ArgumentParser
+import pyzbar
+import cv2
 
-def encode(pswd):
-    code = base64.b64encode(pswd.encode('utf-8'))
-    return code
+argument_parser = ArgumentParser()
+argument_parser.add_argument("-i", "--image", required=True, help="path to input image")
+args = vars(argument_parser.parse_args())
 
-def decode(data):
-    pswd = base64.b64decode(data).decode('utf-8')
-    return pswd
+image = cv2.imread(args["image"])
 
-pswd = "Vm0wd2QyUXlWa2hWV0doVllteEtWMVl3WkRSWFJteFZVbTVrVmxKc2NIcFhhMk0xVmpGS2RHVkdXbFpOYm1oUVdWZDRTMk14VG5OWGJHUlRUVEZLVVZkV1kzaFRNVWw0V2toR1VtSlZXbFJXYWtwdlpWWmFkR05GU214U2JWSkpWbTEwYzJGV1NuUlZiR2hoVmpOb2FGWldXbUZqYkhCSlkwZDRVMkpXU2xsV1Z6QXhVekpHUjFOdVVtaFNlbXhXVm0weGIxSkdjRmRYYlhSWFRWWndlbFl5TVRSVk1rcFhVMnhzVjFaNlFYaFdSRXBIVWpGT2RWUnNhR2hsYlhoWlYxZDRiMVV3TUhoV1dHaFlZbGhTV0ZSV2FFTlRiR3QzV2tSU1ZrMUVSa1pXYlhCaFZqQXhkVlZ1V2xaaGExcGhXbFphVDJOdFNrZFRiV3hvWld4YWIxWnRNVEJXYXpGWFUydGtXRmRIYUZsWmEyaERZekZhYzFWclpGUmlSM2hYVmpKNGExWlhTa2RqUmxwWFlsaFNlbFpxUm1GU2JVVjZZVVprYUdFelFrbFdiWEJIVkRKU1YxZHVUbFJpVjNoVVZGY3hiMkl4V25STlJFWnJUVlZ3ZVZSV1ZtdGhiRXAwWVVoT1ZtRnJOVlJXTVZwaFkxWkdWVkpzVGs1WFJVcElWbXBLTkdFeFdsaFRiRnBxVWxkU1lWbFhjekZqYkZweFVtMUdVMkpWVmpaWlZWcHJWakZLVjJOSE9WaGhNVnBvVmtSS1RtVldUbkpoUjJoVFlrVndWVlp0TURGUk1rbDRWMWhvV0dKRk5WUlVWbFY0VGxaYWRFNVZPVmRpVlhCSVdUQmFjMWR0U2toaFJsSmFUVlp3VkZacVJuZFNWbEp5VGxkc1UySkhPVE5XYTFwaFZURlZlVkpyWkZoaWEzQndWV3RhZDFsV1duTlhibVJPVFZac00xWXlNVWRWTWtwR1RsUkdWazF1YUZoWlZWVjRZekZPY21KR2FGZFNXRUV5VjJ4V1lWbFdXWGhqUld4VllrWktjRlZxUmt0V1ZscEhWV3RLYTAxRVJsTlZSbEYzVUZFOVBRPT0="
+barcodes = pyzbar.decode(image)
 
+for i, barcode in enumerate(barcodes, start=1):
+    x, y, w, h = barcode.rect
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-for i in range(1000):
-    try:
-        pswd = decode(pswd)
-    except:
-        break
-    print(pswd)
+    barcode_data = barcode.data.decode("utf-8")
+    barcode_type = barcode.type
+
+    print(f'Información del código de barras #{i}: {barcode_data}')
+    print(f'Tipo del codigo de barras: {barcode_type}')
+
+    text = f"Data: {barcode_data}, Type: {barcode_type}"
+    cv2.putText(image, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+cv2.imwrite("output.png", image)
 
   
