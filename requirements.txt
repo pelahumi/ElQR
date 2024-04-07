@@ -2,4 +2,4 @@ certifi
 numpy
 opencv-contrib-python
 pyzbar
-zbar
+requests
